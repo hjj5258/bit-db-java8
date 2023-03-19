@@ -5,11 +5,25 @@ import com.varun.db.storage.KeyValueStore;
 
 import java.io.IOException;
 
-public record DeleteCommand(String key) implements Command {
+public class DeleteCommand implements Command {
+    private String key;
+
+    public DeleteCommand(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
     @Override
     public void execute(KeyValueStore keyValueStore) {
         try {
-            keyValueStore.delete(key);
+            keyValueStore.delete(getKey());
         } catch (KeyNotFoundException e) {
             System.out.printf("Key %s not found \n", key);
         } catch (IOException e) {

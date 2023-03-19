@@ -27,11 +27,11 @@ public class FileRecordBuilderTest {
 
         FileRecord fileRecord = FileRecord.buildFileRecord(outputStream.toByteArray());
 
-        assertEquals(timestamp, fileRecord.timestamp());
-        assertEquals(keySize, fileRecord.keySize());
-        assertEquals(valueSize, fileRecord.valueSize());
-        assertEquals(key, fileRecord.key());
-        assertEquals(value, fileRecord.value());
+        assertEquals(timestamp, fileRecord.getTimestamp());
+        assertEquals(keySize, fileRecord.getKeySize());
+        assertEquals(valueSize, fileRecord.getValueSize());
+        assertEquals(key, fileRecord.getKey());
+        assertEquals(value, fileRecord.getValue());
         /*
          * +----------------------------------+---------+-------------------------------+
          * | Timestamp(8 bytes) | Key Size(4 bytes) | Value Size(4 bytes) | Key | Value |
@@ -58,11 +58,11 @@ public class FileRecordBuilderTest {
 
         FileRecord fileRecord = FileRecord.buildFileRecord(outputStream.toByteArray());
 
-        assertEquals(timestamp, fileRecord.timestamp());
-        assertEquals(keySize, fileRecord.keySize());
-        assertEquals(valueSize, fileRecord.valueSize());
-        assertEquals(key, fileRecord.key());
-        assertEquals(value, fileRecord.value());
+        assertEquals(timestamp, fileRecord.getTimestamp());
+        assertEquals(keySize, fileRecord.getKeySize());
+        assertEquals(valueSize, fileRecord.getValueSize());
+        assertEquals(key, fileRecord.getKeySize());
+        assertEquals(value, fileRecord.getValueSize());
         /*
          * +----------------------------------+---------+-----------------------------------------+
          * | Timestamp(8 bytes) | Key Size(4 bytes) | Value Size(4 bytes) |     Key  |     Value  |

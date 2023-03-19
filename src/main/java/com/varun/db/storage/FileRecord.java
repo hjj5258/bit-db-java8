@@ -10,7 +10,20 @@ import java.util.Arrays;
 
 import static com.varun.db.util.FileRecordConfig.*;
 
-public record FileRecord(long timestamp, int keySize, int valueSize, String key, String value) {
+public class FileRecord {
+    private long timestamp;
+    private int keySize;
+    private int valueSize;
+    private String key;
+    private String value;
+
+    public FileRecord(long timestamp, int keySize, int valueSize, String key, String value) {
+        this.timestamp = timestamp;
+        this.keySize = keySize;
+        this.valueSize = valueSize;
+        this.key = key;
+        this.value = value;
+    }
 
     public static FileRecord buildFileRecord(byte[] bytes) {
         long timestamp = parseTimestamp(bytes);
@@ -49,11 +62,55 @@ public record FileRecord(long timestamp, int keySize, int valueSize, String key,
 
     public byte[] toBytes() throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(Longs.toByteArray(timestamp));
-        outputStream.write(Ints.toByteArray(keySize));
-        outputStream.write(Ints.toByteArray(valueSize));
+        outputStream.write(Longs.toByteArray(getTimestamp()));
+        outputStream.write(Ints.toByteArray(getKeySize()));
+        outputStream.write(Ints.toByteArray(getValueSize()));
         outputStream.write(key.getBytes());
         outputStream.write(value.getBytes());
         return outputStream.toByteArray();
+    }
+
+
+
+
+
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public int getKeySize() {
+        return keySize;
+    }
+
+    public void setKeySize(int keySize) {
+        this.keySize = keySize;
+    }
+
+    public int getValueSize() {
+        return valueSize;
+    }
+
+    public void setValueSize(int valueSize) {
+        this.valueSize = valueSize;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 }

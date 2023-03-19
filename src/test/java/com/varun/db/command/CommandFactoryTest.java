@@ -16,7 +16,7 @@ public class CommandFactoryTest {
         assertTrue(command instanceof GetCommand);
 
         GetCommand getCommand = (GetCommand) command;
-        assertEquals("A", getCommand.key());
+        assertEquals("A", getCommand.getKey());
     }
 
     @Test
@@ -26,8 +26,8 @@ public class CommandFactoryTest {
         assertTrue(command instanceof SetCommand);
 
         SetCommand setCommand = (SetCommand) command;
-        assertEquals("A", setCommand.key());
-        assertEquals("2", setCommand.value());
+        assertEquals("A", setCommand.getKey());
+        assertEquals("2", setCommand.getValue());
     }
 
     @Test
@@ -37,6 +37,6 @@ public class CommandFactoryTest {
         assertTrue(command instanceof DeleteCommand);
 
         DeleteCommand deleteCommand = (DeleteCommand) command;
-        assertEquals("A", deleteCommand.key());
+        assertEquals("A", deleteCommand.getKey());
     }
 }

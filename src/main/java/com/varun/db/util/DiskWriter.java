@@ -34,7 +34,7 @@ public class DiskWriter {
                         /* timestamp */ 8 +
                         /* key size */ 4 +
                         /* value size */ 4 +
-                        /* key */ fileRecord.key().getBytes().length
+                        /* key */ fileRecord.getKey().getBytes().length
         );
         try (FileOutputStream fileOutputStream = new FileOutputStream(file, true)) {
             fileOutputStream.write(outputStream.toByteArray());

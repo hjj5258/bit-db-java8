@@ -11,6 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class KeyValueStore {
 
@@ -39,7 +40,7 @@ public class KeyValueStore {
             return this.cache.get(key);
         }
         ValueMetadata valueMetadata = this.keyToValueMetadata.get(key);
-        byte[] bytes = FileSystemUtil.readNBytesFromFilePointer(valueMetadata.fileId, valueMetadata.valuePosition, valueMetadata.valueSize);
+        byte[] bytes = FileSystemUtil.readNBytesFromFilePointer(valueMetadata.getFileId(), valueMetadata.getValuePosition(), valueMetadata.getValueSize());
         String value = new String(bytes, StandardCharsets.UTF_8);
         cache.put(key, value);
 
@@ -59,7 +60,7 @@ public class KeyValueStore {
 
         DiskWriterResponse diskWriterResponse = this.diskWriter.persistToDiskForActiveFile(fileRecord);
         this.keyToValueMetadata.put(key,
-                buildValueMetadata(fileRecord, diskWriterResponse.fileName(), diskWriterResponse.valuePosition()));
+                buildValueMetadata(fileRecord, diskWriterResponse.getFileName(), diskWriterResponse.getValuePosition()));
     }
 
     public void delete(String key) throws KeyNotFoundException, IOException {
@@ -137,8 +138,7 @@ public class KeyValueStore {
         }
         // List down all but currently opened file
         List<File> filesToCompact = Arrays.stream(getFilesSortedByCreationTime(dbDirectory, false))
-                .limit(numberOfFiles - 1)
-                .toList();
+                .limit(numberOfFiles - 1).collect(Collectors.toList());
         // Rebuild keyToValueMetadata by processing all files
         Map<String, ValueMetadata> compactedFilesKeyToValueMetadata = new HashMap<>();
         Map<String, String> keyToValueMapping = new HashMap<>();
@@ -158,9 +158,9 @@ public class KeyValueStore {
         // Write the mapping to new file
         for (Map.Entry<String, ValueMetadata> entry : compactedFilesKeyToValueMetadata.entrySet()) {
             FileRecord fileRecord = new FileRecord(
-                    entry.getValue().timestamp,
+                    entry.getValue().getTimestamp(),
                     entry.getKey().getBytes().length,
-                    entry.getValue().valueSize,
+                    entry.getValue().getValueSize(),
                     entry.getKey(),
                     keyToValueMapping.get(entry.getKey())
             );
@@ -174,8 +174,8 @@ public class KeyValueStore {
         // Update existing mapping to new file
         for (Map.Entry<String, ValueMetadata> entry : compactedFilesKeyToValueMetadata.entrySet()) {
             if (this.keyToValueMetadata.containsKey(entry.getKey()) &&
-                    this.keyToValueMetadata.get(entry.getKey()).timestamp == entry.getValue().timestamp &&
-                    !this.keyToValueMetadata.get(entry.getKey()).fileId.equals(entry.getValue().fileId)) {
+                    this.keyToValueMetadata.get(entry.getKey()).getTimestamp() == entry.getValue().getTimestamp() &&
+                    !this.keyToValueMetadata.get(entry.getKey()).getFileId().equals(entry.getValue().getFileId())) {
                 this.keyToValueMetadata.put(entry.getKey(), entry.getValue());
             }
         }
@@ -210,13 +210,13 @@ public class KeyValueStore {
                             /* timestamp */ 8 +
                             /* key size */ 4 +
                             /* value size */ 4 +
-                            /* key */ fileRecord.key().getBytes().length
+                            /* key */ fileRecord.getKey().getBytes().length
             );
-            if (!keyToValueMetadata.containsKey(fileRecord.key()) ||
-                    keyToValueMetadata.get(fileRecord.key()).fileId.equals(file.getPath())) {
-                keyToValueMetadata.put(fileRecord.key(),
+            if (!keyToValueMetadata.containsKey(fileRecord.getKey()) ||
+                    keyToValueMetadata.get(fileRecord.getKey()).getFileId().equals(file.getPath())) {
+                keyToValueMetadata.put(fileRecord.getKey(),
                         buildValueMetadata(fileRecord, file.getPath(), valuePosition));
-                keyToValueMapping.put(fileRecord.key(), fileRecord.value());
+                keyToValueMapping.put(fileRecord.getKey(), fileRecord.getKey());
             }
             byteCursor += recordSize;
         }
@@ -224,9 +224,54 @@ public class KeyValueStore {
     }
 
     private ValueMetadata buildValueMetadata(FileRecord fileRecord, String fileName, int valuePosition) {
-        return new ValueMetadata(fileName, fileRecord.valueSize(), valuePosition, fileRecord.timestamp());
+        return new ValueMetadata(fileName, fileRecord.getValueSize(), valuePosition, fileRecord.getTimestamp());
     }
 
-    private record ValueMetadata(String fileId, int valueSize, int valuePosition, long timestamp) {
+    private class ValueMetadata {
+        private String fileId;
+        private int valueSize;
+        private int valuePosition;
+        private long timestamp;
+
+        public ValueMetadata(String fileId, int valueSize, int valuePosition, long timestamp) {
+            this.fileId = fileId;
+            this.valueSize = valueSize;
+            this.valuePosition = valuePosition;
+            this.timestamp = timestamp;
+        }
+
+
+
+        public String getFileId() {
+            return fileId;
+        }
+
+        public void setFileId(String fileId) {
+            this.fileId = fileId;
+        }
+
+        public int getValueSize() {
+            return valueSize;
+        }
+
+        public void setValueSize(int valueSize) {
+            this.valueSize = valueSize;
+        }
+
+        public int getValuePosition() {
+            return valuePosition;
+        }
+
+        public void setValuePosition(int valuePosition) {
+            this.valuePosition = valuePosition;
+        }
+
+        public long getTimestamp() {
+            return timestamp;
+        }
+
+        public void setTimestamp(long timestamp) {
+            this.timestamp = timestamp;
+        }
     }
 }

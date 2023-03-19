@@ -23,12 +23,16 @@ public class CommandFactory {
         if (cursor == input.length()) {
             throw new InvalidCommandException("Operands needs to be specified in the command");
         }
-        return switch (operation) {
-            case "GET" -> parseGetCommand(input, cursor);
-            case "SET" -> parseSetCommand(input, cursor);
-            case "DEL" -> parseDeleteCommand(input, cursor);
-            default -> throw new InvalidCommandException("Operation not supported");
-        };
+        switch (operation) {
+            case "GET":
+                return parseGetCommand(input, cursor);
+            case "SET":
+                return parseSetCommand(input, cursor);
+            case "DEL":
+                return parseDeleteCommand(input, cursor);
+            default:
+                throw new InvalidCommandException("Operation not supported");
+        }
     }
 
     private static SetCommand parseSetCommand(String input, int cursor) throws InvalidCommandException {

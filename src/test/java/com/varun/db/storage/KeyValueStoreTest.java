@@ -30,7 +30,7 @@ public class KeyValueStoreTest {
 
     @Test
     public void keyValueStore_setAndGetSuccess() throws IOException, KeyNotFoundException {
-        KeyValueStore keyValueStore = new KeyValueStore("test-dir");
+        KeyValueStore keyValueStore = new KeyValueStore(TEST_DIR);
 
         String key = "A";
         String value = "1";
